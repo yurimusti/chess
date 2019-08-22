@@ -504,7 +504,7 @@ export const table = [
       podeMover: false,
       hasPiece: true,
       peace: "peao",
-      color: "white",
+      color: "black",
       position: { x: 0, y: 6 },
       danger: false
     },

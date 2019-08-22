@@ -13,27 +13,58 @@ function Chess() {
     if (piece.hasPiece) {
       const filtered = tabuleiro.filter(e => e.movendo === true);
       let newTab = tabuleiro;
-      if (filtered.length !== 0 && filtered[0] !== piece) {
+
+      if (piece.danger && filtered.length !== 0) {
+        let color = filtered[0].color;
+        let peace = filtered[0].peace;
         newTab = tabuleiro.map(e => {
-          e.movendo = false;
-          e.podeMover = false;
-          e.danger = false;
+          if (e === filtered[0]) {
+            e.movendo = false;
+            e.podeMover = false;
+            e.danger = false;
+            e.hasPiece = false;
+            e.color = "";
+            e.peace = "";
+          } else if (e === piece) {
+            e.movendo = false;
+            e.podeMover = false;
+            e.danger = false;
+            e.hasPiece = true;
+            e.color = color;
+            e.peace = peace;
+          } else {
+            e.podeMover = false;
+            e.danger = false;
+          }
           return e;
         });
-      }
-      const tab = newTab.map(e => {
-        if (e === piece) {
-          e.movendo = !e.movendo;
+        setTabuleiro(newTab);
+
+        console.log("COMEU");
+      } else {
+        //ANDAR
+        if (filtered.length !== 0 && filtered[0] !== piece) {
+          newTab = tabuleiro.map(e => {
+            e.movendo = false;
+            e.podeMover = false;
+            e.danger = false;
+            return e;
+          });
         }
-        return e;
-      });
-      switch (piece.peace) {
-        case "peao":
-          moverPeao(piece, tab, value => setTabuleiro(value), piece.color);
-          break;
-        default:
-          console.log("a", piece);
-          break;
+        const tab = newTab.map((e, i) => {
+          if (e === piece) {
+            e.movendo = !e.movendo;
+          }
+          return e;
+        });
+        switch (piece.peace) {
+          case "peao":
+            moverPeao(piece, tab, value => setTabuleiro(value), piece.color);
+            break;
+          default:
+            console.log("a", piece);
+            break;
+        }
       }
     } else {
       if (piece.podeMover) {
@@ -45,9 +76,22 @@ function Chess() {
             e.movendo = false;
             e.podeMover = false;
             e.danger = false;
+            e.hasPiece = true;
             e.peace = peace;
             e.color = color;
-            e.hasPiece = true;
+            if (
+              e.position.y === 7 &&
+              e.color === "black" &&
+              e.peace === "peao"
+            ) {
+              e.peace = "dama";
+            } else if (
+              e.position.y === 0 &&
+              e.color === "white" &&
+              e.peace === "peao"
+            ) {
+              e.peace = "dama";
+            }
           } else if (e === filter[0]) {
             e.movendo = false;
             e.podeMover = false;
@@ -82,6 +126,8 @@ function Chess() {
                   ? "canMove"
                   : piece.danger === true
                   ? "danger"
+                  : piece.movendo === true
+                  ? "movendo"
                   : ""
               }`}
             >
